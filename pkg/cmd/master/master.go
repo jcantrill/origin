@@ -85,7 +85,8 @@ func NewCommandStartAllInOne(name string) *cobra.Command {
 					cfg.startNode()
 				}
 			} else {
-				cfg.startAllInOne()
+				sig := make(chan int, 1)
+				cfg.startAllInOne(sig)
 			}
 		},
 	}
@@ -162,7 +163,7 @@ func (c *config) getEtcdClient() (*etcdclient.Client, []string) {
 	return etcdClient, etcdServers
 }
 
-func (c *config) startAllInOne() {
+func (c *config) startAllInOne(sig <-chan int) {
 	c.runEtcd()
 	c.runApiserver()
 	c.runAssetServer()
@@ -172,8 +173,11 @@ func (c *config) startAllInOne() {
 	c.runReplicationController()
 	c.runBuildController()
 	c.runDeploymentController()
-
-	select {}
+	
+		
+	select {
+		default: <-sig
+	}
 }
 
 func (c *config) startMaster() {
