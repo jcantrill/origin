@@ -1,6 +1,7 @@
 package strategy
 
 import (
+	"encoding/json"
 	"testing"
 
 	kubeapi "github.com/GoogleCloudPlatform/kubernetes/pkg/api"
@@ -31,15 +32,17 @@ func TestDockerCreateBuildPod(t *testing.T) {
 	if actual.DesiredState.Manifest.RestartPolicy.Never == nil {
 		t.Errorf("Expected never, got %#v", actual.DesiredState.Manifest.RestartPolicy)
 	}
-	if len(container.Env) != 5 {
-		t.Fatalf("Expected 5 elements in Env table, got %d", len(container.Env))
+	if len(container.Env) != 6 {
+		t.Fatalf("Expected 6 elements in Env table, got %d", len(container.Env))
 	}
+	buildInput, _ := json.Marshal(expected.Input)
 	errorCases := map[int][]string{
 		0: {"BUILD_TAG", expected.Input.ImageTag},
 		1: {"SOURCE_URI", expected.Input.SourceURI},
 		2: {"SOURCE_REF", expected.Input.SourceRef},
 		3: {"REGISTRY", expected.Input.Registry},
 		4: {"CONTEXT_DIR", expected.Input.DockerInput.ContextDir},
+		5: {"BUILD_INPUT", string(buildInput)},
 	}
 	for index, exp := range errorCases {
 		if e := container.Env[index]; e.Name != exp[0] || e.Value != exp[1] {

@@ -161,3 +161,74 @@ func post(event string, data []byte, url string, expStatusCode int, t *testing.T
 			expStatusCode, resp.Status, string(body))
 	}
 }
+
+type testContext struct {
+	plugin   GitHubWebHook
+	buildCfg *api.BuildConfig
+	req      *http.Request
+	path     string
+}
+
+func setup(t *testing.T, filename, eventType string) *testContext {
+	context := testContext{
+		plugin:   GitHubWebHook{},
+		buildCfg: &api.BuildConfig{},
+		path:     "/foobar",
+	}
+	event, err := ioutil.ReadFile("fixtures/" + filename)
+	if err != nil {
+		t.Errorf("Failed to open %s: %v", filename, err)
+	}
+	req, err := http.NewRequest("POST", "http://origin.com", bytes.NewReader(event))
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("User-Agent", "GitHub-Hookshot/github")
+	req.Header.Add("X-Github-Event", eventType)
+
+	context.req = req
+	return &context
+}
+
+func TestExtractForAPingEvent(t *testing.T) {
+	//setup
+	context := setup(t, "pingevent.json", "ping")
+
+	//execute
+	build, proceed, err := context.plugin.Extract(context.buildCfg, context.path, context.req)
+
+	//validation
+	if err != nil {
+		t.Errorf("Error while extracting build info: %s", err)
+	}
+	if proceed {
+		t.Errorf("The 'proceed' return value should equal 'false' %s", proceed)
+	}
+	if build == nil {
+		t.Error("Expecting the build to not be nil")
+	}
+}
+
+func TestExtractProvidesValidBuildForAPushEvent(t *testing.T) {
+	//setup
+	context := setup(t, "pushevent.json", "push")
+
+	//execute
+	build, proceed, err := context.plugin.Extract(context.buildCfg, context.path, context.req)
+
+	//validation
+	if err != nil {
+		t.Errorf("Error while extracting build info: %s", err)
+	}
+	if !proceed {
+		t.Errorf("The 'proceed' return value should equal 'true' %s", proceed)
+	}
+	if build == nil {
+		t.Error("Expecting the build to not be nil")
+	} else {
+		if build.Input.Commit.ID != "9bdc3a26ff933b32f3e558636b58aea86a69f051" {
+			t.Error("Expecting the build's desired input to contain the commit id from the push event")
+		}
+		if build.Input.Commit.Type != api.GitScmRepoType {
+			t.Error("Expecting the build's commit type to be git")
+		}
+	}
+}

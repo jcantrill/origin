@@ -1,6 +1,7 @@
 package strategy
 
 import (
+	"encoding/json"
 	"io/ioutil"
 
 	"github.com/GoogleCloudPlatform/kubernetes/pkg/api"
@@ -35,6 +36,10 @@ func NewSTIBuildStrategy(stiBuilderImage string, tc TempDirectoryCreator, useLoc
 // CreateBuildPod creates a pod that will execute the STI build
 // TODO: Make the Pod definition configurable
 func (bs *STIBuildStrategy) CreateBuildPod(build *buildapi.Build) (*api.Pod, error) {
+	buildInput, err := json.Marshal(build.Input)
+	if err != nil {
+		return nil, err
+	}
 	pod := &api.Pod{
 		JSONBase: api.JSONBase{
 			ID: build.PodID,
@@ -50,6 +55,8 @@ func (bs *STIBuildStrategy) CreateBuildPod(build *buildapi.Build) (*api.Pod, err
 							{Name: "BUILD_TAG", Value: build.Input.ImageTag},
 							{Name: "SOURCE_URI", Value: build.Input.SourceURI},
 							{Name: "SOURCE_REF", Value: build.Input.SourceRef},
+							{Name: "SOURCE_ID", Value: build.Input.Commit.ID},
+							{Name: "BUILD_INPUT", Value: string(buildInput)},
 							{Name: "REGISTRY", Value: build.Input.Registry},
 							{Name: "BUILDER_IMAGE", Value: build.Input.STIInput.BuilderImage},
 						},

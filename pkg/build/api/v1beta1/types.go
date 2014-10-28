@@ -29,6 +29,9 @@ type BuildInput struct {
 	// SourceRef is the branch/tag/ref to build.
 	SourceRef string `json:"sourceRef,omitempty" yaml:"sourceRef,omitempty"`
 
+	// Commit is the specific commit information to build
+	Commit Commit `json:"commit,omitempty" yaml:"commit,omitempty"`
+
 	// ImageTag is the tag to give to the image resulting from the build
 	ImageTag string `json:"imageTag,omitempty" yaml:"imageTag,omitempty"`
 
@@ -53,6 +56,29 @@ type DockerBuildInput struct {
 type STIBuildInput struct {
 	// BuilderImage is the image used to execute the build
 	BuilderImage string `json:"builderImage,omitempty" yaml:"builderImage,omitempty"`
+}
+
+// ScmUser defines the identity of a user of source control
+type ScmUser struct {
+	Name  string `json:"name,omitempty" yaml:"name,omitempty"`
+	Email string `json:"email,omitempty" yaml:"email,omitempty"`
+}
+
+// ScmRepoType is the type of source control repository (e.g. git, svn)
+type ScmRepoType string
+
+const (
+	// GitScmRepType is the git source control system
+	GitScmRepoType ScmRepoType = "git"
+)
+
+// Commit is the snapshot information for a specific revision in a ScmRepo
+type Commit struct {
+	Type      ScmRepoType `json:"type,omitempty" yaml:"type,omitempty"`
+	ID        string      `json:"id,omitempty" yaml:"id,omitempty"`
+	Author    ScmUser     `json:"author,omitempty" yaml:"author,omitempty"`
+	Committer ScmUser     `json:"committer,omitempty" yaml:"committer,omitempty"`
+	Message   string      `json:"message,omitempty" yaml:"message,omitempty"`
 }
 
 // BuildConfig contains the inputs needed to produce a new deployable image

@@ -1,6 +1,7 @@
 package strategy
 
 import (
+	"encoding/json"
 	"github.com/GoogleCloudPlatform/kubernetes/pkg/api"
 	buildapi "github.com/openshift/origin/pkg/build/api"
 )
@@ -19,6 +20,10 @@ func NewDockerBuildStrategy(dockerBuilderImage string, useLocalImage bool) *Dock
 // CreateBuildPod creates the pod to be used for the Docker build
 // TODO: Make the Pod definition configurable
 func (bs *DockerBuildStrategy) CreateBuildPod(build *buildapi.Build) (*api.Pod, error) {
+	buildInput, err := json.Marshal(build.Input)
+	if err != nil {
+		return nil, err
+	}
 	contextDir := ""
 	if build.Input.DockerInput != nil {
 		contextDir = build.Input.DockerInput.ContextDir
@@ -41,6 +46,7 @@ func (bs *DockerBuildStrategy) CreateBuildPod(build *buildapi.Build) (*api.Pod, 
 							{Name: "SOURCE_REF", Value: build.Input.SourceRef},
 							{Name: "REGISTRY", Value: build.Input.Registry},
 							{Name: "CONTEXT_DIR", Value: contextDir},
+							{Name: "BUILD_INPUT", Value: string(buildInput)},
 						},
 					},
 				},

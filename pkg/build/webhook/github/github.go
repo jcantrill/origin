@@ -19,6 +19,12 @@ func New() *GitHubWebHook {
 	return &GitHubWebHook{}
 }
 
+type gitHubPushEvent struct {
+	Ref        string     `json:"ref,omitempty" yaml:"ref,omitempty"`
+	After      string     `json:"after,omitempty" yaml:"after,omitempty"`
+	HeadCommit api.Commit `json:"head_commit,omitempty" yaml:"head_commit,omitempty"`
+}
+
 // Extract responsible for servicing webhooks from github.com.
 func (p *GitHubWebHook) Extract(buildCfg *api.BuildConfig, path string, req *http.Request) (build *api.Build, proceed bool, err error) {
 	if err = verifyRequest(req); err != nil {
@@ -34,10 +40,15 @@ func (p *GitHubWebHook) Extract(buildCfg *api.BuildConfig, path string, req *htt
 	if err != nil {
 		return
 	}
-	var data map[string]interface{}
-	if err = json.Unmarshal(body, &data); err != nil {
+	var event gitHubPushEvent
+	if err = json.Unmarshal(body, &event); err != nil {
 		return
 	}
+	build = &api.Build{
+		Input: buildCfg.DesiredInput,
+	}
+	build.Input.Commit = event.HeadCommit
+	build.Input.Commit.Type = api.GitScmRepoType
 
 	return
 }
@@ -57,3 +68,5 @@ func verifyRequest(req *http.Request) error {
 	}
 	return nil
 }
+
+//func createBuildFromGitHubPushEvent(data map[string
