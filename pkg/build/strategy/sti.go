@@ -53,9 +53,9 @@ func (bs *STIBuildStrategy) CreateBuildPod(build *buildapi.Build) (*api.Pod, err
 						Image: bs.stiBuilderImage,
 						Env: []api.EnvVar{
 							{Name: "BUILD_TAG", Value: build.Input.ImageTag},
-							{Name: "SOURCE_URI", Value: build.Input.SourceURI},
-							{Name: "SOURCE_REF", Value: build.Input.SourceRef},
-							{Name: "SOURCE_ID", Value: build.Input.Commit.ID},
+							{Name: "SOURCE_URI", Value: build.Input.Source.Git.URI},
+							{Name: "SOURCE_REF", Value: build.Input.Source.Git.Ref},
+							{Name: "SOURCE_ID", Value: build.Input.Source.Git.Commit.ID},
 							{Name: "BUILD_INPUT", Value: string(buildInput)},
 							{Name: "REGISTRY", Value: build.Input.Registry},
 							{Name: "BUILDER_IMAGE", Value: build.Input.STIInput.BuilderImage},

@@ -333,8 +333,12 @@ func TestBuildRESTValidatesUpdate(t *testing.T) {
 		"empty ID": {
 			JSONBase: kubeapi.JSONBase{ID: ""},
 			Input: api.BuildInput{
-				SourceURI: "http://my.build.com/the/build/Dockerfile",
-				ImageTag:  "repository/dataBuild",
+				Source: &api.SourceControl{
+					Git: &api.GitSourceControl{
+						URI: "http://my.build.com/the/build/Dockerfile",
+					},
+				},
+				ImageTag: "repository/dataBuild",
 			},
 		},
 		"empty build input": {
@@ -359,8 +363,12 @@ func mockBuild() *api.Build {
 			ID: "dataBuild",
 		},
 		Input: api.BuildInput{
-			SourceURI: "http://my.build.com/the/build/Dockerfile",
-			ImageTag:  "repository/dataBuild",
+			Source: &api.SourceControl{
+				Git: &api.GitSourceControl{
+					URI: "http://my.build.com/the/build/Dockerfile",
+				},
+			},
+			ImageTag: "repository/dataBuild",
 		},
 		Status: api.BuildPending,
 		PodID:  "-the-pod-id",

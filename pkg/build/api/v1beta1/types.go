@@ -22,15 +22,8 @@ type Build struct {
 
 // BuildInput defines input parameters for a given build
 type BuildInput struct {
-	// SourceURI points to the source that will be built. The structure of the source
-	// will depend on the type of build to run
-	SourceURI string `json:"sourceURI,omitempty" yaml:"sourceURI,omitempty"`
-
-	// SourceRef is the branch/tag/ref to build.
-	SourceRef string `json:"sourceRef,omitempty" yaml:"sourceRef,omitempty"`
-
-	// Commit is the specific commit information to build
-	Commit Commit `json:"commit,omitempty" yaml:"commit,omitempty"`
+	// Source is SCM system in use
+	Source *SourceControl `json:"source,omitempty" yaml:"source,omitempty"`
 
 	// ImageTag is the tag to give to the image resulting from the build
 	ImageTag string `json:"imageTag,omitempty" yaml:"imageTag,omitempty"`
@@ -45,6 +38,38 @@ type BuildInput struct {
 	STIInput *STIBuildInput `json:"stiInput,omitempty" yaml:"stiInput,omitempty"`
 }
 
+// SourceControl is the SCM used for the build
+type SourceControl struct {
+	Git *GitSourceControl `json:"git,omitempty" yaml:"git,omitempty"`
+}
+
+// GitSourceControl defines the parameters of a Git SCM
+type GitSourceControl struct {
+	// URI points to the source that will be built. The structure of the source
+	// will depend on the type of build to run
+	URI string `json:"uri,omitempty" yaml:"uri,omitempty"`
+
+	// Ref is the branch/tag/ref to build.
+	Ref string `json:"ref,omitempty" yaml:"ref,omitempty"`
+
+	// Commit is the specific commit information to build
+	Commit Commit `json:"commit,omitempty" yaml:"commit,omitempty"`
+}
+
+// ScmUser defines the identity of a user of source control
+type ScmUser struct {
+	Name  string `json:"name,omitempty" yaml:"name,omitempty"`
+	Email string `json:"email,omitempty" yaml:"email,omitempty"`
+}
+
+// Commit is the snapshot information for a specific revision in a ScmRepo
+type Commit struct {
+	ID        string  `json:"id,omitempty" yaml:"id,omitempty"`
+	Author    ScmUser `json:"author,omitempty" yaml:"author,omitempty"`
+	Committer ScmUser `json:"committer,omitempty" yaml:"committer,omitempty"`
+	Message   string  `json:"message,omitempty" yaml:"message,omitempty"`
+}
+
 // DockerBuildInput defines input parameters specific to docker build
 type DockerBuildInput struct {
 	// ContextDir is a directory inside the SourceURI structure which should be used as a docker
@@ -56,29 +81,6 @@ type DockerBuildInput struct {
 type STIBuildInput struct {
 	// BuilderImage is the image used to execute the build
 	BuilderImage string `json:"builderImage,omitempty" yaml:"builderImage,omitempty"`
-}
-
-// ScmUser defines the identity of a user of source control
-type ScmUser struct {
-	Name  string `json:"name,omitempty" yaml:"name,omitempty"`
-	Email string `json:"email,omitempty" yaml:"email,omitempty"`
-}
-
-// ScmRepoType is the type of source control repository (e.g. git, svn)
-type ScmRepoType string
-
-const (
-	// GitScmRepType is the git source control system
-	GitScmRepoType ScmRepoType = "git"
-)
-
-// Commit is the snapshot information for a specific revision in a ScmRepo
-type Commit struct {
-	Type      ScmRepoType `json:"type,omitempty" yaml:"type,omitempty"`
-	ID        string      `json:"id,omitempty" yaml:"id,omitempty"`
-	Author    ScmUser     `json:"author,omitempty" yaml:"author,omitempty"`
-	Committer ScmUser     `json:"committer,omitempty" yaml:"committer,omitempty"`
-	Message   string      `json:"message,omitempty" yaml:"message,omitempty"`
 }
 
 // BuildConfig contains the inputs needed to produce a new deployable image

@@ -285,8 +285,12 @@ func setup() (buildController *BuildController, build *api.Build, ctx kapi.Conte
 			ID: "dataBuild",
 		},
 		Input: api.BuildInput{
-			SourceURI: "http://my.build.com/the/build/Dockerfile",
-			ImageTag:  "repository/dataBuild",
+			Source: &api.SourceControl{
+				Git: &api.GitSourceControl{
+					URI: "http://my.build.com/the/build/Dockerfile",
+				},
+			},
+			ImageTag: "repository/dataBuild",
 		},
 		Status: api.BuildNew,
 		PodID:  "-the-pod-id",

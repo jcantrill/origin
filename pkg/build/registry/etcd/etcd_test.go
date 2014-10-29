@@ -61,8 +61,12 @@ func TestEtcdCreateBuild(t *testing.T) {
 			ID: "foo",
 		},
 		Input: api.BuildInput{
-			SourceURI: "http://my.build.com/the/build/Dockerfile",
-			ImageTag:  "repository/dataBuild",
+			Source: &api.SourceControl{
+				Git: &api.GitSourceControl{
+					URI: "http://my.build.com/the/build/Dockerfile",
+				},
+			},
+			ImageTag: "repository/dataBuild",
 		},
 		Status: api.BuildPending,
 		PodID:  "-the-pod-id",
@@ -228,8 +232,12 @@ func TestEtcdCreateBuildConfig(t *testing.T) {
 			ID: "foo",
 		},
 		DesiredInput: api.BuildInput{
-			SourceURI: "http://my.build.com/the/build/Dockerfile",
-			ImageTag:  "repository/dataBuild",
+			Source: &api.SourceControl{
+				Git: &api.GitSourceControl{
+					URI: "http://my.build.com/the/build/Dockerfile",
+				},
+			},
+			ImageTag: "repository/dataBuild",
 		},
 		Labels: map[string]string{
 			"name": "dataBuildConfig",

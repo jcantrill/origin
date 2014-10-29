@@ -19,7 +19,16 @@ type osClient struct {
 }
 
 func (_ *osClient) GetBuildConfig(ctx kapi.Context, id string) (result *api.BuildConfig, err error) {
-	return &api.BuildConfig{Secret: "secret101"}, nil
+	return &api.BuildConfig{
+		Secret: "secret101",
+		DesiredInput: api.BuildInput{
+			Source: &api.SourceControl{
+				Git: &api.GitSourceControl{
+					URI: "git://github.com/my/repo.git",
+				},
+			},
+		},
+	}, nil
 }
 
 func TestWrongMethod(t *testing.T) {
@@ -171,9 +180,18 @@ type testContext struct {
 
 func setup(t *testing.T, filename, eventType string) *testContext {
 	context := testContext{
-		plugin:   GitHubWebHook{},
-		buildCfg: &api.BuildConfig{},
-		path:     "/foobar",
+		plugin: GitHubWebHook{},
+		buildCfg: &api.BuildConfig{
+			Secret: "secret101",
+			DesiredInput: api.BuildInput{
+				Source: &api.SourceControl{
+					Git: &api.GitSourceControl{
+						URI: "git://github.com/my/repo.git",
+					},
+				},
+			},
+		},
+		path: "/foobar",
 	}
 	event, err := ioutil.ReadFile("fixtures/" + filename)
 	if err != nil {
@@ -224,11 +242,8 @@ func TestExtractProvidesValidBuildForAPushEvent(t *testing.T) {
 	if build == nil {
 		t.Error("Expecting the build to not be nil")
 	} else {
-		if build.Input.Commit.ID != "9bdc3a26ff933b32f3e558636b58aea86a69f051" {
+		if build.Input.Source.Git.Commit.ID != "9bdc3a26ff933b32f3e558636b58aea86a69f051" {
 			t.Error("Expecting the build's desired input to contain the commit id from the push event")
-		}
-		if build.Input.Commit.Type != api.GitScmRepoType {
-			t.Error("Expecting the build's commit type to be git")
 		}
 	}
 }

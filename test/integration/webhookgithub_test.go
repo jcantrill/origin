@@ -44,8 +44,12 @@ func TestWebhookGithubPush(t *testing.T) {
 			ID: "pushbuild",
 		},
 		DesiredInput: buildapi.BuildInput{
-			SourceURI: "http://my.docker/build",
-			ImageTag:  "namespace/builtimage",
+			Source: &api.SourceControl{
+				Git: &api.GitSourceControl{
+					URI: "http://my.docker/build",
+				},
+			},
+			ImageTag: "namespace/builtimage",
 		},
 		Secret: "secret101",
 	}
@@ -85,8 +89,12 @@ func TestWebhookGithubPing(t *testing.T) {
 			ID: "pingbuild",
 		},
 		DesiredInput: buildapi.BuildInput{
-			SourceURI: "http://my.docker/build",
-			ImageTag:  "namespace/builtimage",
+			Source: &api.SourceControl{
+				Git: &api.GitSourceControl{
+					URI: "http://my.docker/build",
+				},
+			},
+			ImageTag: "namespace/builtimage",
 		},
 		Secret: "secret101",
 	}

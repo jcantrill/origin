@@ -41,23 +41,20 @@ if [ -n "${SOURCE_REF}" ] || [ -n "${CONTEXT_DIR}" ]; then
     exit 1
   fi
   pushd "${BUILD_DIR}"
-    if [ -n "${SOURCE_REF}" ]; then
-      git checkout "${SOURCE_REF}"
-      if [ $? != 0 ]; then
-        echo "Error trying to checkout branch: ${SOURCE_REF}"
-        exit 1
-      fi
+  if [ -n "${SOURCE_REF}" ]; then
+    git checkout "${SOURCE_REF}"
+    if [ $? != 0 ]; then
+      echo "Error trying to checkout branch: ${SOURCE_REF}"
+      exit 1
     fi
-    if [ -n "${SOURCE_ID}" ]; then
-      if [ -n "${SOURCE_REF}" ]; then
-        SOURCE_REF="master"
-      fi
-      git branch --contains ${SOURCE_ID} | grep ${SOURCE_REF}
-      if [ $? != 0 ]; then
-        echo "Branch '${SOURCE_REF}' does not contain commit: ${SOURCE_ID}"
-        exit 1
-      fi
+  fi
+  if [ -n "${SOURCE_ID}" ]; then
+    git branch --contains ${SOURCE_ID} | grep ${SOURCE_REF}
+    if [ $? != 0 ]; then
+      echo "Branch '${SOURCE_REF}' does not contain commit: ${SOURCE_ID}"
+      exit 1
     fi
+  fi
   popd
   if [ -n "${CONTEXT_DIR}" ] && [ ! -d "${BUILD_DIR}/${CONTEXT_DIR}" ]; then
     echo "ContextDir does not exist in the repository: ${CONTEXT_DIR}"

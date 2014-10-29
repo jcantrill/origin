@@ -44,9 +44,9 @@ func TestSTICreateBuildPod(t *testing.T) {
 	buildInput, _ := json.Marshal(expected.Input)
 	errorCases := map[int][]string{
 		0: {"BUILD_TAG", expected.Input.ImageTag},
-		1: {"SOURCE_URI", expected.Input.SourceURI},
-		2: {"SOURCE_REF", expected.Input.SourceRef},
-		3: {"SOURCE_ID", expected.Input.Commit.ID},
+		1: {"SOURCE_URI", expected.Input.Source.Git.URI},
+		2: {"SOURCE_REF", expected.Input.Source.Git.Ref},
+		3: {"SOURCE_ID", expected.Input.Source.Git.Commit.ID},
 		4: {"BUILD_INPUT", string(buildInput)},
 		5: {"REGISTRY", expected.Input.Registry},
 		6: {"BUILDER_IMAGE", expected.Input.STIInput.BuilderImage},
@@ -65,10 +65,14 @@ func mockSTIBuild() *api.Build {
 			ID: "stiBuild",
 		},
 		Input: api.BuildInput{
-			SourceURI: "http://my.build.com/the/stibuild/Dockerfile",
-			ImageTag:  "repository/stiBuild",
-			Registry:  "docker-registry",
-			STIInput:  &api.STIBuildInput{BuilderImage: "repository/sti-builder"},
+			Source: &api.SourceControl{
+				Git: &api.GitSourceControl{
+					URI: "http://my.build.com/the/stibuild/Dockerfile",
+				},
+			},
+			ImageTag: "repository/stiBuild",
+			Registry: "docker-registry",
+			STIInput: &api.STIBuildInput{BuilderImage: "repository/sti-builder"},
 		},
 		Status: api.BuildNew,
 		PodID:  "-the-pod-id",
