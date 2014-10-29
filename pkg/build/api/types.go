@@ -83,6 +83,12 @@ type STIBuildInput struct {
 	BuilderImage string `json:"builderImage,omitempty" yaml:"builderImage,omitempty"`
 }
 
+// STIBuildInput defines input parameters specific to sti build
+type STIBuildInput struct {
+	// BuilderImage is the image used to execute the build
+	BuilderImage string `json:"builderImage,omitempty" yaml:"builderImage,omitempty"`
+}
+
 // BuildConfigLabel is the key of a Build label whose value is the ID of a BuildtConfig
 // on which the Build is based.
 const BuildConfigLabel = "buildConfig"
