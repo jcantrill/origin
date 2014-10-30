@@ -83,6 +83,10 @@ type STIBuildInput struct {
 	BuilderImage string `json:"builderImage,omitempty" yaml:"builderImage,omitempty"`
 }
 
+// BuildConfigLabel is the key of a Build label whose value is the ID of a BuildtConfig
+// on which the Build is based.
+const BuildConfigLabel = "buildConfig"
+
 // BuildConfig contains the inputs needed to produce a new deployable image
 type BuildConfig struct {
 	api.JSONBase `json:",inline" yaml:",inline"`
