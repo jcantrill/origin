@@ -20,15 +20,14 @@ func NewDockerBuildStrategy(dockerBuilderImage string, useLocalImage bool) *Dock
 // CreateBuildPod creates the pod to be used for the Docker build
 // TODO: Make the Pod definition configurable
 func (bs *DockerBuildStrategy) CreateBuildPod(build *buildapi.Build) (*api.Pod, error) {
-	buildInput, err := json.Marshal(build.Input)
-	if err != nil {
-		return nil, err
-	}
 	contextDir := ""
 	if build.Input.DockerInput != nil {
 		contextDir = build.Input.DockerInput.ContextDir
 	}
-
+	buildJson, err := json.Marshal(build)
+	if err != nil {
+		return nil, err
+	}
 	pod := &api.Pod{
 		JSONBase: api.JSONBase{
 			ID: build.PodID,
@@ -42,12 +41,12 @@ func (bs *DockerBuildStrategy) CreateBuildPod(build *buildapi.Build) (*api.Pod, 
 						Image: bs.dockerBuilderImage,
 						Env: []api.EnvVar{
 							{Name: "BUILD_TAG", Value: build.Input.ImageTag},
-							{Name: "SOURCE_URI", Value: build.Input.Source.Git.URI},
-							{Name: "SOURCE_REF", Value: build.Input.Source.Git.Ref},
-							{Name: "SOURCE_ID", Value: build.Input.Source.Git.Commit.ID},
+							{Name: "SOURCE_URI", Value: build.Input.GitSource.URI},
+							{Name: "SOURCE_REF", Value: build.Input.GitSource.Ref},
+							{Name: "SOURCE_ID", Value: build.Input.GitSource.Commit.ID},
 							{Name: "REGISTRY", Value: build.Input.Registry},
 							{Name: "CONTEXT_DIR", Value: contextDir},
-							{Name: "BUILD_INPUT", Value: string(buildInput)},
+							{Name: "BUILD", Value: string(buildJson)},
 						},
 					},
 				},

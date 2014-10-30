@@ -36,7 +36,7 @@ func NewSTIBuildStrategy(stiBuilderImage string, tc TempDirectoryCreator, useLoc
 // CreateBuildPod creates a pod that will execute the STI build
 // TODO: Make the Pod definition configurable
 func (bs *STIBuildStrategy) CreateBuildPod(build *buildapi.Build) (*api.Pod, error) {
-	buildInput, err := json.Marshal(build.Input)
+	buildJson, err := json.Marshal(build)
 	if err != nil {
 		return nil, err
 	}
@@ -53,10 +53,10 @@ func (bs *STIBuildStrategy) CreateBuildPod(build *buildapi.Build) (*api.Pod, err
 						Image: bs.stiBuilderImage,
 						Env: []api.EnvVar{
 							{Name: "BUILD_TAG", Value: build.Input.ImageTag},
-							{Name: "SOURCE_URI", Value: build.Input.Source.Git.URI},
-							{Name: "SOURCE_REF", Value: build.Input.Source.Git.Ref},
-							{Name: "SOURCE_ID", Value: build.Input.Source.Git.Commit.ID},
-							{Name: "BUILD_INPUT", Value: string(buildInput)},
+							{Name: "SOURCE_URI", Value: build.Input.GitSource.URI},
+							{Name: "SOURCE_REF", Value: build.Input.GitSource.Ref},
+							{Name: "SOURCE_ID", Value: build.Input.GitSource.Commit.ID},
+							{Name: "BUILD", Value: string(buildJson)},
 							{Name: "REGISTRY", Value: build.Input.Registry},
 							{Name: "BUILDER_IMAGE", Value: build.Input.STIInput.BuilderImage},
 						},

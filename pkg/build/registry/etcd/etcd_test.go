@@ -61,10 +61,8 @@ func TestEtcdCreateBuild(t *testing.T) {
 			ID: "foo",
 		},
 		Input: api.BuildInput{
-			Source: &api.SourceControl{
-				Git: &api.GitSourceControl{
-					URI: "http://my.build.com/the/build/Dockerfile",
-				},
+			GitSource: &api.GitSourceControl{
+				URI: "http://my.build.com/the/build/Dockerfile",
 			},
 			ImageTag: "repository/dataBuild",
 		},
@@ -232,10 +230,8 @@ func TestEtcdCreateBuildConfig(t *testing.T) {
 			ID: "foo",
 		},
 		DesiredInput: api.BuildInput{
-			Source: &api.SourceControl{
-				Git: &api.GitSourceControl{
-					URI: "http://my.build.com/the/build/Dockerfile",
-				},
+			GitSource: &api.GitSourceControl{
+				URI: "http://my.build.com/the/build/Dockerfile",
 			},
 			ImageTag: "repository/dataBuild",
 		},

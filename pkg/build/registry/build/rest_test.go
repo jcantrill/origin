@@ -333,10 +333,8 @@ func TestBuildRESTValidatesUpdate(t *testing.T) {
 		"empty ID": {
 			JSONBase: kubeapi.JSONBase{ID: ""},
 			Input: api.BuildInput{
-				Source: &api.SourceControl{
-					Git: &api.GitSourceControl{
-						URI: "http://my.build.com/the/build/Dockerfile",
-					},
+				GitSource: &api.GitSourceControl{
+					URI: "http://my.build.com/the/build/Dockerfile",
 				},
 				ImageTag: "repository/dataBuild",
 			},
@@ -363,10 +361,8 @@ func mockBuild() *api.Build {
 			ID: "dataBuild",
 		},
 		Input: api.BuildInput{
-			Source: &api.SourceControl{
-				Git: &api.GitSourceControl{
-					URI: "http://my.build.com/the/build/Dockerfile",
-				},
+			GitSource: &api.GitSourceControl{
+				URI: "http://my.build.com/the/build/Dockerfile",
 			},
 			ImageTag: "repository/dataBuild",
 		},

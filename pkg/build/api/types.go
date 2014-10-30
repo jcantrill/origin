@@ -22,8 +22,11 @@ type Build struct {
 
 // BuildInput defines input parameters for a given build
 type BuildInput struct {
-	// Source is SCM system in use
-	Source *SourceControl `json:"source,omitempty" yaml:"source,omitempty"`
+	//SourceType is the type of SCM used as the build input
+	SourceType SourceType `json:"sourceType" yaml:"sourceType"`
+
+	// GitSource is SCM system in use
+	GitSource *GitSourceControl `json:"gitSource,omitempty" yaml:"gitSource,omitempty"`
 
 	// ImageTag is the tag to give to the image resulting from the build
 	ImageTag string `json:"imageTag,omitempty" yaml:"imageTag,omitempty"`
@@ -38,10 +41,13 @@ type BuildInput struct {
 	STIInput *STIBuildInput `json:"stiInput,omitempty" yaml:"stiInput,omitempty"`
 }
 
-// SourceControl is the SCM used for the build
-type SourceControl struct {
-	Git *GitSourceControl `json:"git,omitempty" yaml:"git,omitempty"`
-}
+// SourceType is the type of SCM used
+type SourceType string
+
+const (
+	//GitSource is a Git SCM
+	GitSource SourceType = "git"
+)
 
 // GitSourceControl defines the parameters of a Git SCM
 type GitSourceControl struct {
@@ -75,12 +81,6 @@ type DockerBuildInput struct {
 	// ContextDir is a directory inside the SourceURI structure which should be used as a docker
 	// context when building
 	ContextDir string `json:"contextDir,omitempty" yaml:"contextDir,omitempty"`
-}
-
-// STIBuildInput defines input parameters specific to sti build
-type STIBuildInput struct {
-	// BuilderImage is the image used to execute the build
-	BuilderImage string `json:"builderImage,omitempty" yaml:"builderImage,omitempty"`
 }
 
 // STIBuildInput defines input parameters specific to sti build

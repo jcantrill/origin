@@ -28,7 +28,11 @@ func ValidateBuildConfig(config *api.BuildConfig) errs.ErrorList {
 }
 
 func validateBuildInput(input *api.BuildInput) errs.ErrorList {
-	allErrs := append(errs.ErrorList{}, validateSource(input.Source).Prefix("source")...)
+	allErrs := errs.ErrorList{}
+	if input.SourceType != api.GitSource {
+		allErrs = append(allErrs, errs.NewFieldRequired("sourceType", api.GitSource))
+	}
+	allErrs = append(errs.ErrorList{}, validateGitSource(input.GitSource).Prefix("gitSource")...)
 	if len(input.ImageTag) == 0 {
 		allErrs = append(allErrs, errs.NewFieldRequired("imageTag", input.ImageTag))
 	}
@@ -38,19 +42,15 @@ func validateBuildInput(input *api.BuildInput) errs.ErrorList {
 	return allErrs
 }
 
-func validateSource(input *api.SourceControl) errs.ErrorList {
+func validateGitSource(input *api.GitSourceControl) errs.ErrorList {
 	allErrs := errs.ErrorList{}
 	if input == nil {
-		allErrs = append(allErrs, errs.NewFieldRequired("source", input))
+		allErrs = append(allErrs, errs.NewFieldRequired("gitSource", input))
 	} else {
-		if input.Git == nil {
-			allErrs = append(allErrs, errs.NewFieldRequired("git", input.Git))
-		} else {
-			if len(input.Git.URI) == 0 {
-				allErrs = append(allErrs, errs.NewFieldRequired("git.URI", input.Git.URI))
-			} else if !isValidURL(input.Git.URI) {
-				allErrs = append(allErrs, errs.NewFieldInvalid("git.URI", input.Git.URI))
-			}
+		if len(input.URI) == 0 {
+			allErrs = append(allErrs, errs.NewFieldRequired("URI", input.URI))
+		} else if !isValidURL(input.URI) {
+			allErrs = append(allErrs, errs.NewFieldInvalid("URI", input.URI))
 		}
 	}
 	return allErrs

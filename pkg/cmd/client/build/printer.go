@@ -40,7 +40,7 @@ func printBuildConfig(bc *api.BuildConfig, w io.Writer) error {
 		buildType = api.STIBuildType
 	}
 
-	_, err := fmt.Fprintf(w, "%s\t%v\t%s\n", bc.ID, buildType, bc.DesiredInput.Source.Git.URI)
+	_, err := fmt.Fprintf(w, "%s\t%v\t%s\n", bc.ID, buildType, bc.DesiredInput.GitSource.URI)
 	return err
 }
 

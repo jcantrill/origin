@@ -47,7 +47,8 @@ func (p *GitHubWebHook) Extract(buildCfg *api.BuildConfig, path string, req *htt
 	build = &api.Build{
 		Input: buildCfg.DesiredInput,
 	}
-	build.Input.Source.Git.Commit = event.HeadCommit
+	build.Input.SourceType = api.GitSource
+	build.Input.GitSource.Commit = event.HeadCommit
 
 	return
 }

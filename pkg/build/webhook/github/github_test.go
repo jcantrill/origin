@@ -22,10 +22,8 @@ func (_ *osClient) GetBuildConfig(ctx kapi.Context, id string) (result *api.Buil
 	return &api.BuildConfig{
 		Secret: "secret101",
 		DesiredInput: api.BuildInput{
-			Source: &api.SourceControl{
-				Git: &api.GitSourceControl{
-					URI: "git://github.com/my/repo.git",
-				},
+			GitSource: &api.GitSourceControl{
+				URI: "git://github.com/my/repo.git",
 			},
 		},
 	}, nil
@@ -184,10 +182,8 @@ func setup(t *testing.T, filename, eventType string) *testContext {
 		buildCfg: &api.BuildConfig{
 			Secret: "secret101",
 			DesiredInput: api.BuildInput{
-				Source: &api.SourceControl{
-					Git: &api.GitSourceControl{
-						URI: "git://github.com/my/repo.git",
-					},
+				GitSource: &api.GitSourceControl{
+					URI: "git://github.com/my/repo.git",
 				},
 			},
 		},
@@ -242,8 +238,11 @@ func TestExtractProvidesValidBuildForAPushEvent(t *testing.T) {
 	if build == nil {
 		t.Error("Expecting the build to not be nil")
 	} else {
-		if build.Input.Source.Git.Commit.ID != "9bdc3a26ff933b32f3e558636b58aea86a69f051" {
+		if build.Input.GitSource.Commit.ID != "9bdc3a26ff933b32f3e558636b58aea86a69f051" {
 			t.Error("Expecting the build's desired input to contain the commit id from the push event")
+		}
+		if build.Input.SourceType != api.GitSource {
+			t.Error("Expecting the build's sourceType to be 'git'")
 		}
 	}
 }

@@ -35,15 +35,15 @@ func TestDockerCreateBuildPod(t *testing.T) {
 	if len(container.Env) != 7 {
 		t.Fatalf("Expected 7 elements in Env table, got %d", len(container.Env))
 	}
-	buildInput, _ := json.Marshal(expected.Input)
+	buildJson, _ := json.Marshal(expected)
 	errorCases := map[int][]string{
 		0: {"BUILD_TAG", expected.Input.ImageTag},
-		1: {"SOURCE_URI", expected.Input.Source.Git.URI},
-		2: {"SOURCE_REF", expected.Input.Source.Git.Ref},
-		3: {"SOURCE_ID", expected.Input.Source.Git.Commit.ID},
+		1: {"SOURCE_URI", expected.Input.GitSource.URI},
+		2: {"SOURCE_REF", expected.Input.GitSource.Ref},
+		3: {"SOURCE_ID", expected.Input.GitSource.Commit.ID},
 		4: {"REGISTRY", expected.Input.Registry},
 		5: {"CONTEXT_DIR", expected.Input.DockerInput.ContextDir},
-		6: {"BUILD_INPUT", string(buildInput)},
+		6: {"BUILD", string(buildJson)},
 	}
 	for index, exp := range errorCases {
 		if e := container.Env[index]; e.Name != exp[0] || e.Value != exp[1] {
@@ -58,10 +58,8 @@ func mockDockerBuild() *api.Build {
 			ID: "dockerBuild",
 		},
 		Input: api.BuildInput{
-			Source: &api.SourceControl{
-				Git: &api.GitSourceControl{
-					URI: "http://my.build.com/the/dockerbuild/Dockerfile",
-				},
+			GitSource: &api.GitSourceControl{
+				URI: "http://my.build.com/the/dockerbuild/Dockerfile",
 			},
 			ImageTag:    "repository/dockerBuild",
 			Registry:    "docker-registry",

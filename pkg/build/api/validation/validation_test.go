@@ -12,10 +12,8 @@ func TestBuildValdationSuccess(t *testing.T) {
 	build := &api.Build{
 		JSONBase: kubeapi.JSONBase{ID: "buildID"},
 		Input: api.BuildInput{
-			Source: &api.SourceControl{
-				Git: &api.GitSourceControl{
-					URI: "http://github.com/my/repository",
-				},
+			GitSource: &api.GitSourceControl{
+				URI: "http://github.com/my/repository",
 			},
 			ImageTag: "repository/data",
 		},
@@ -30,10 +28,8 @@ func TestBuildValidationFailure(t *testing.T) {
 	build := &api.Build{
 		JSONBase: kubeapi.JSONBase{ID: ""},
 		Input: api.BuildInput{
-			Source: &api.SourceControl{
-				Git: &api.GitSourceControl{
-					URI: "http://github.com/my/repository",
-				},
+			GitSource: &api.GitSourceControl{
+				URI: "http://github.com/my/repository",
 			},
 			ImageTag: "repository/data",
 		},
@@ -48,10 +44,8 @@ func TestBuildConfigValidationSuccess(t *testing.T) {
 	buildConfig := &api.BuildConfig{
 		JSONBase: kubeapi.JSONBase{ID: "configID"},
 		DesiredInput: api.BuildInput{
-			Source: &api.SourceControl{
-				Git: &api.GitSourceControl{
-					URI: "http://github.com/my/repository",
-				},
+			GitSource: &api.GitSourceControl{
+				URI: "http://github.com/my/repository",
 			},
 			ImageTag: "repository/data",
 		},
@@ -65,10 +59,8 @@ func TestBuildConfigValidationFailure(t *testing.T) {
 	buildConfig := &api.BuildConfig{
 		JSONBase: kubeapi.JSONBase{ID: ""},
 		DesiredInput: api.BuildInput{
-			Source: &api.SourceControl{
-				Git: &api.GitSourceControl{
-					URI: "http://github.com/my/repository",
-				},
+			GitSource: &api.GitSourceControl{
+				URI: "http://github.com/my/repository",
 			},
 			ImageTag: "repository/data",
 		},
@@ -78,47 +70,35 @@ func TestBuildConfigValidationFailure(t *testing.T) {
 	}
 }
 
-func TestValidateSource(t *testing.T) {
-	if result := validateSource(nil); len(result) != 1 {
+func TestValidateGitSource(t *testing.T) {
+	if result := validateGitSource(nil); len(result) != 1 {
 		t.Errorf("Expected validation error when source is missing")
-	}
-	source := &api.SourceControl{}
-	if result := validateSource(source); len(result) != 1 {
-		t.Errorf("Expected validation error when source type(e.g. git) is missing")
 	}
 }
 
 func TestValidateBuildInput(t *testing.T) {
 	errorCases := map[string]*api.BuildInput{
-		string(errs.ValidationErrorTypeRequired) + "source.git.URI": &api.BuildInput{
-			Source: &api.SourceControl{
-				Git: &api.GitSourceControl{
-					URI: "",
-				},
+		string(errs.ValidationErrorTypeRequired) + "gitSource.URI": &api.BuildInput{
+			GitSource: &api.GitSourceControl{
+				URI: "",
 			},
 			ImageTag: "repository/data",
 		},
-		string(errs.ValidationErrorTypeInvalid) + "source.git.URI": &api.BuildInput{
-			Source: &api.SourceControl{
-				Git: &api.GitSourceControl{
-					URI: "::",
-				},
+		string(errs.ValidationErrorTypeInvalid) + "gitSource.URI": &api.BuildInput{
+			GitSource: &api.GitSourceControl{
+				URI: "::",
 			},
 			ImageTag: "repository/data",
 		},
 		string(errs.ValidationErrorTypeRequired) + "imageTag": &api.BuildInput{
-			Source: &api.SourceControl{
-				Git: &api.GitSourceControl{
-					URI: "http://github.com/test/uri",
-				},
+			GitSource: &api.GitSourceControl{
+				URI: "http://github.com/test/uri",
 			},
 			ImageTag: "",
 		},
 		string(errs.ValidationErrorTypeRequired) + "stiBuild.builderImage": &api.BuildInput{
-			Source: &api.SourceControl{
-				Git: &api.GitSourceControl{
-					URI: "http://github.com/test/uri",
-				},
+			GitSource: &api.GitSourceControl{
+				URI: "http://github.com/test/uri",
 			},
 			ImageTag: "repository/data",
 			STIInput: &api.STIBuildInput{

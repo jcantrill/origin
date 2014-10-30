@@ -254,10 +254,8 @@ func mockBuildConfig() *api.BuildConfig {
 			ID: "dataBuild",
 		},
 		DesiredInput: api.BuildInput{
-			Source: &api.SourceControl{
-				Git: &api.GitSourceControl{
-					URI: "http://my.build.com/the/build/Dockerfile",
-				},
+			GitSource: &api.GitSourceControl{
+				URI: "http://my.build.com/the/build/Dockerfile",
 			},
 			ImageTag: "repository/dataBuild",
 		},
@@ -324,10 +322,8 @@ func TestBuildConfigRESTValidatesCreate(t *testing.T) {
 		"blank sourceURI": {
 			JSONBase: kubeapi.JSONBase{ID: "abc"},
 			DesiredInput: api.BuildInput{
-				Source: &api.SourceControl{
-					Git: &api.GitSourceControl{
-						URI: "",
-					},
+				GitSource: &api.GitSourceControl{
+					URI: "",
 				},
 				ImageTag: "data/image",
 				STIInput: &api.STIBuildInput{
@@ -338,10 +334,8 @@ func TestBuildConfigRESTValidatesCreate(t *testing.T) {
 		"blank ImageTag": {
 			JSONBase: kubeapi.JSONBase{ID: "abc"},
 			DesiredInput: api.BuildInput{
-				Source: &api.SourceControl{
-					Git: &api.GitSourceControl{
-						URI: "http://github.com/test/source",
-					},
+				GitSource: &api.GitSourceControl{
+					URI: "http://github.com/test/source",
 				},
 				ImageTag: "",
 			},
@@ -349,10 +343,8 @@ func TestBuildConfigRESTValidatesCreate(t *testing.T) {
 		"blank BuilderImage": {
 			JSONBase: kubeapi.JSONBase{ID: "abc"},
 			DesiredInput: api.BuildInput{
-				Source: &api.SourceControl{
-					Git: &api.GitSourceControl{
-						URI: "http://github.com/test/source",
-					},
+				GitSource: &api.GitSourceControl{
+					URI: "http://github.com/test/source",
 				},
 				ImageTag: "data/image",
 				STIInput: &api.STIBuildInput{
@@ -379,10 +371,8 @@ func TestBuildRESTValidatesUpdate(t *testing.T) {
 		"empty ID": {
 			JSONBase: kubeapi.JSONBase{ID: ""},
 			DesiredInput: api.BuildInput{
-				Source: &api.SourceControl{
-					Git: &api.GitSourceControl{
-						URI: "http://github.com/test/source",
-					},
+				GitSource: &api.GitSourceControl{
+					URI: "http://github.com/test/source",
 				},
 				ImageTag: "data/image",
 			},
@@ -390,10 +380,8 @@ func TestBuildRESTValidatesUpdate(t *testing.T) {
 		"blank sourceURI": {
 			JSONBase: kubeapi.JSONBase{ID: "abc"},
 			DesiredInput: api.BuildInput{
-				Source: &api.SourceControl{
-					Git: &api.GitSourceControl{
-						URI: "",
-					},
+				GitSource: &api.GitSourceControl{
+					URI: "",
 				},
 				ImageTag: "data/image",
 				STIInput: &api.STIBuildInput{
@@ -404,10 +392,8 @@ func TestBuildRESTValidatesUpdate(t *testing.T) {
 		"blank ImageTag": {
 			JSONBase: kubeapi.JSONBase{ID: "abc"},
 			DesiredInput: api.BuildInput{
-				Source: &api.SourceControl{
-					Git: &api.GitSourceControl{
-						URI: "http://github.com/test/source",
-					},
+				GitSource: &api.GitSourceControl{
+					URI: "http://github.com/test/source",
 				},
 				ImageTag: "",
 			},
@@ -415,10 +401,8 @@ func TestBuildRESTValidatesUpdate(t *testing.T) {
 		"blank BuilderImage on STIBuildType": {
 			JSONBase: kubeapi.JSONBase{ID: "abc"},
 			DesiredInput: api.BuildInput{
-				Source: &api.SourceControl{
-					Git: &api.GitSourceControl{
-						URI: "http://github.com/test/source",
-					},
+				GitSource: &api.GitSourceControl{
+					URI: "http://github.com/test/source",
 				},
 				ImageTag: "data/image",
 				STIInput: &api.STIBuildInput{

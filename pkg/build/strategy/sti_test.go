@@ -41,13 +41,13 @@ func TestSTICreateBuildPod(t *testing.T) {
 	if len(container.Env) != 8 {
 		t.Fatalf("Expected 8 elements in Env table, got %d", len(container.Env))
 	}
-	buildInput, _ := json.Marshal(expected.Input)
+	buildJson, _ := json.Marshal(expected)
 	errorCases := map[int][]string{
 		0: {"BUILD_TAG", expected.Input.ImageTag},
-		1: {"SOURCE_URI", expected.Input.Source.Git.URI},
-		2: {"SOURCE_REF", expected.Input.Source.Git.Ref},
-		3: {"SOURCE_ID", expected.Input.Source.Git.Commit.ID},
-		4: {"BUILD_INPUT", string(buildInput)},
+		1: {"SOURCE_URI", expected.Input.GitSource.URI},
+		2: {"SOURCE_REF", expected.Input.GitSource.Ref},
+		3: {"SOURCE_ID", expected.Input.GitSource.Commit.ID},
+		4: {"BUILD", string(buildJson)},
 		5: {"REGISTRY", expected.Input.Registry},
 		6: {"BUILDER_IMAGE", expected.Input.STIInput.BuilderImage},
 		7: {"TEMP_DIR", "test_temp"},
@@ -65,10 +65,8 @@ func mockSTIBuild() *api.Build {
 			ID: "stiBuild",
 		},
 		Input: api.BuildInput{
-			Source: &api.SourceControl{
-				Git: &api.GitSourceControl{
-					URI: "http://my.build.com/the/stibuild/Dockerfile",
-				},
+			GitSource: &api.GitSourceControl{
+				URI: "http://my.build.com/the/stibuild/Dockerfile",
 			},
 			ImageTag: "repository/stiBuild",
 			Registry: "docker-registry",
