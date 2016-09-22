@@ -195,9 +195,10 @@ func (o *Config) Validate() error {
 
 // RunCmdLogging is the entry point for the aggregated logging command.
 func (cfg *Config) RunCmdLogging() error {
+	//TODO Handle OPS correctly
 	objects := []runtime.Object{}
 	objects = append(objects, createServiceAccounts()...)
-	objects = append(objects, createKibana(cfg)...)
+	objects = append(objects, cfg.createKibana(componentKibana, cfg.PublicMasterURL, cfg.ImagesPrefix, defaultElasticHost, defaultElasticPort)...)
 	objects = append(objects, createCurator(cfg)...)
 	objects = append(objects, createElasticSearch(cfg)...)
 	objects = append(objects, createFluentd(cfg)...)
@@ -231,48 +232,6 @@ func createServiceAccounts() []runtime.Object {
 		objects[i] = sa
 	}
 	return objects
-}
-
-// createKibana creates kibana components.
-func createKibana(cfg *Config) []runtime.Object {
-	deployName := componentKibana
-	// TODO version comes from where?
-	image := fmt.Sprintf("%slogging-kibana:%s", cfg.ImagesPrefix, "version")
-	labels := labels.Set(map[string]string{
-		"provider":  "openshift",
-		"component": deployName,
-	})
-	dc := &deployapi.DeploymentConfig{
-		ObjectMeta: kapi.ObjectMeta{
-			Name:   fmt.Sprintf("%s-%s", namePrefixDeploymentConfig, deployName),
-			Labels: labels,
-		},
-		Spec: deployapi.DeploymentConfigSpec{
-			Replicas: 1,
-			Selector: labels,
-			Strategy: deployapi.DeploymentStrategy{
-				Type: deployapi.DeploymentStrategyTypeRolling,
-				RollingParams: &deployapi.RollingDeploymentStrategyParams{
-					IntervalSeconds:     int64Ptr(defaultDCIntervalSec),
-					TimeoutSeconds:      int64Ptr(defaultDCTimeoutSec),
-					UpdatePeriodSeconds: int64Ptr(defaultDCUpdatePeriodSec),
-				},
-			},
-			Template: &kapi.PodTemplateSpec{
-				ObjectMeta: kapi.ObjectMeta{Name: deployName, Labels: labels},
-				Spec: kapi.PodSpec{
-					ServiceAccountName: fmt.Sprintf("%s-%s", namePrefixServiceAccount, componentKibana),
-					Containers: []kapi.Container{
-						{
-							Name:  componentKibana,
-							Image: image,
-						},
-					},
-				},
-			},
-		},
-	}
-	return []runtime.Object{dc}
 }
 
 // createFluentd creates fluentd components.
