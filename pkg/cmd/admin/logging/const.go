@@ -22,6 +22,10 @@ const (
 
 	elasticTerminationGracePeriodSec int64 = 600
 	elasticMemory                          = "512Mi"
+
+	curatorCPU = "100m"
+
+	defaultMasterURL = "https://kubernetes.default.svc.cluster.local"
 )
 
 var componentNames = sets.NewString(componentKibana, componentFluentd, componentCurator, componentElastic)

@@ -10,7 +10,6 @@ import (
 	deployapi "github.com/openshift/origin/pkg/deploy/api"
 )
 
-// createDeploymentConfig creates kibana components.
 func (cfg *KibanaConfig) createKibana(deployName, publicMasterURL, imagePrefix, esHost string, esPort uint) []runtime.Object {
 	// TODO version comes from where?
 	image := fmt.Sprintf("%slogging-kibana:%s", imagePrefix, "version")
@@ -69,7 +68,7 @@ func (cfg *KibanaConfig) createKibana(deployName, publicMasterURL, imagePrefix, 
 								{Name: "OAP_AUTH_MODE", Value: "oauth2"},
 								{Name: "OAP_TRANSFORM", Value: "user_header,token_header"},
 								{Name: "OAP_OAUTH_ID", Value: proxyName},
-								{Name: "OAP_MASTER_URL", Value: "https://kubernetes.default.svc.cluster.local"},
+								{Name: "OAP_MASTER_URL", Value: defaultMasterURL},
 								{Name: "OAP_PUBLIC_MASTER_URL", Value: publicMasterURL},
 								{Name: "OAP_LOGOUT_REDIRECT", Value: fmt.Sprintf("%s/console/logout", publicMasterURL)},
 								{Name: "OAP_MASTER_CA_FILE", Value: "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"},

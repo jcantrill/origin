@@ -199,7 +199,7 @@ func (cfg *Config) RunCmdLogging() error {
 	objects := []runtime.Object{}
 	objects = append(objects, createServiceAccounts()...)
 	objects = append(objects, cfg.createKibana(componentKibana, cfg.PublicMasterURL, cfg.ImagesPrefix, defaultElasticHost, defaultElasticPort)...)
-	objects = append(objects, createCurator(cfg)...)
+	objects = append(objects, cfg.createCurator(componentCurator, cfg.ImagesPrefix, defaultElasticHost, defaultElasticPort)...)
 	objects = append(objects, createElasticSearch(cfg)...)
 	objects = append(objects, createFluentd(cfg)...)
 
