@@ -9,6 +9,7 @@ import (
 	"github.com/spf13/pflag"
 
 	kapi "k8s.io/kubernetes/pkg/api"
+	"k8s.io/kubernetes/pkg/api/resource"
 	kcmdutil "k8s.io/kubernetes/pkg/kubectl/cmd/util"
 	"k8s.io/kubernetes/pkg/labels"
 	"k8s.io/kubernetes/pkg/runtime"
@@ -281,7 +282,62 @@ func createFluentd(cfg *Config) []runtime.Object {
 
 // createElasticSearch creates elasticsearch components.
 func createElasticSearch(cfg *Config) []runtime.Object {
-	return nil
+	labels := labels.Set(map[string]string{
+		"provider":   "openshift",
+		"component":  componentElastic,
+		"deployment": "", //TODO where does this come from?
+	})
+
+	dc := &deployapi.DeploymentConfig{
+		ObjectMeta: kapi.ObjectMeta{
+			Name:   fmt.Sprintf("%s-%s", namePrefixDeploymentConfig, componentElastic),
+			Labels: labels,
+		},
+		Spec: deployapi.DeploymentConfigSpec{
+			Strategy: deployapi.DeploymentStrategy{
+				Type: deployapi.DeploymentStrategyTypeRecreate,
+			},
+			Template: &kapi.PodTemplateSpec{
+				ObjectMeta: kapi.ObjectMeta{Name: componentElastic, Labels: labels},
+				Spec: kapi.PodSpec{
+					TerminationGracePeriodSeconds: int64Ptr(elasticTerminationGracePeriodSec),
+					ServiceAccountName:            fmt.Sprintf("%s-%s", namePrefixServiceAccount, componentFluentd),
+					SecurityContext: &kapi.PodSecurityContext{
+						SupplementalGroups: []int64{}, // TODO where do these come from
+					},
+					Containers: []kapi.Container{
+						{
+							Name: componentElastic,
+							// TODO version
+							Image: fmt.Sprintf("%slogging-elasticsearch:%s", cfg.ImagesPrefix, "version"),
+							Resources: kapi.ResourceRequirements{
+								Limits: map[kapi.ResourceName]resource.Quantity{
+									// TODO
+									kapi.ResourceMemory: resource.MustParse(""),
+								},
+								Requests: map[kapi.ResourceName]resource.Quantity{
+									kapi.ResourceMemory: resource.MustParse(elasticMemory),
+								},
+							},
+							Ports: []kapi.ContainerPort{
+								{Name: "restapi", ContainerPort: 9200},
+								{Name: "cluster", ContainerPort: 9300},
+							},
+							Env: []kapi.EnvVar{
+								{Name: "KUBERNETES_TRUST_CERT", Value: "true"},
+								{Name: "SERVICE_DNS", Value: fmt.Sprintf("logging-%s-cluster", componentElastic)},
+								{Name: "CLUSTER_NAME", Value: fmt.Sprintf("logging-%s", componentElastic)},
+							},
+							// TODO volumeMounts
+						},
+						// TODO volumes
+					},
+				},
+			},
+		},
+	}
+
+	return []runtime.Object{dc}
 }
 
 // createCurator creates curator components.
